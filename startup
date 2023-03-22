@@ -66,13 +66,13 @@ INPUT_CID=$($ARCH_PATH/car root $DATA_DEV)
 
 if [ x$PREV_OUTPUT_CID == xbafybeiczsscdsbs7ffqz55asqdf3smv6klcw3gofszvwlyarci47bgf354 ]; then
 	echo "Empty state, picking input as our stage 2"
-	STAGE2_CID=$INPUT_CID
+	STAGE2_DRIVE=$DATA_DEV
 else
-	STAGE2_CID=$PREV_OUTPUT_CID
+	STAGE2_DRIVE=$PREV_OUTPUT_CID_BLOCKDEV
 fi
 
 cd /mnt/scratch
-$ARCH_PATH/car x -f $STAGE2_CID --path boot/stage2.squashfs 
+$ARCH_PATH/car x -f $STAGE2_DRIVE --path boot/stage2.squashfs 
 
 mkdir -p /mnt/stage2
 mount -o ro /mnt/scratch/stage2.squashfs /mnt/stage2
