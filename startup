@@ -82,7 +82,7 @@ mount --bind /sys  /mnt/stage2/sys
 mkdir -p /mnt/scratch/root
 mount --bind /mnt/scratch/root /mnt/stage2/root
 
-chroot /mnt/scratch/code $RUNTIME_CONFIG $PREV_OUTPUT_CID_BLOCKDEV $DATA_DEV $OUTPUT_DEV
+chroot /mnt/stage2 /init $RUNTIME_CONFIG $PREV_OUTPUT_CID_BLOCKDEV $DATA_DEV $OUTPUT_DEV
 
 RET=$?
 if [ x$RET != 0 ]; then
