@@ -1,0 +1,11 @@
+#! /bin/sh
+
+export RUNTIME_CONFIG="qemu"
+
+mount -t proc proc /proc
+mount -t sysfs sysfs /sys
+
+sysctl vm.overcommit_memory=1
+/sbin/ifconfig lo 127.0.0.1
+
+exec /startup
