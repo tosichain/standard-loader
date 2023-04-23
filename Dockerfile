@@ -35,7 +35,6 @@ COPY ./resolv.conf /etc/resolv.conf
 COPY ./startup /startup
 COPY ./qemu-init /qemu-init
 COPY ./empty.car /empty.car
-COPY ./empty.car.rawKeccak /empty.car.rawKeccak
 
 FROM alpine:3.15.0 AS buildimg
 RUN apk add squashfs-tools

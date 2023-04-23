@@ -2,6 +2,7 @@
 OUTPUT_DEV="/dev/mtdblock2"
 DATA_DEV="/dev/mtdblock7"
 PREV_OUTPUT_CID_BLOCKDEV="/dev/mtdblock6"
+EMPTY_CID="bafybeiczsscdsbs7ffqz55asqdf3smv6klcw3gofszvwlyarci47bgf354"
 
 if [ "$RUNTIME_CONFIG" = "qemu" ]; then
   ARCH=amd64
@@ -87,7 +88,8 @@ chroot /mnt/stage2 /init $RUNTIME_CONFIG $PREV_OUTPUT_CID_BLOCKDEV $DATA_DEV $OU
 RET=$?
 if [ x$RET != 0 ]; then
 	echo "Something went wrong in stage2, return code $RET, returning previous output CID"
-	cat /empty.car.rawKeccak > $OUTPUT_DEV
+	printf "%s\0\0" $EMPTY_CID > /tmp/pre-sha256
+	sha256sum /tmp/pre-sha256 | cut -d " " -f -1 | xxd -r -p > $OUTPUT_DEV
 	cp /empty.car /mnt/scratch/root/output.car
 fi
 
