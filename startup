@@ -90,7 +90,8 @@ RET=$?
 if [ x$RET != 0 ]; then
 	echo "Something went wrong in stage2, return code $RET, returning previous output CID"
 	printf "%s\0%s\0" $EMPTY_CID $EMPTY_SHA256 > /tmp/pre-sha256
-	sha256sum /tmp/pre-sha256 | cut -d " " -f -1 | xxd -r -p > $OUTPUT_DEV
+	SHA256=$(sha256sum /tmp/pre-sha256 | cut -d " " -f -1)
+	echo -n $SHA256 | xxd -r -p > $OUTPUT_DEV
 	cp /empty.car /mnt/scratch/root/output.car
 fi
 
