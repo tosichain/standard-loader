@@ -1,7 +1,7 @@
 # =============================================================================
 FROM alpine:3.15.0 AS image-base
 
-RUN apk --no-cache add e2fsprogs coreutils
+RUN apk --no-cache add e2fsprogs coreutils xxd
 
 # =============================================================================
 
