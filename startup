@@ -77,7 +77,7 @@ cd /mnt/scratch
 $ARCH_PATH/car x -f $STAGE2_DRIVE --path boot/stage2.squashfs 
 
 mkdir -p /mnt/stage2
-mount -o ro /mnt/scratch/stage2.squashfs /mnt/stage2
+mount -o ro /mnt/scratch/boot/stage2.squashfs /mnt/stage2
 mount --bind /dev  /mnt/stage2/dev
 mount --bind /proc /mnt/stage2/proc
 mount --bind /sys  /mnt/stage2/sys
