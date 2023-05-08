@@ -1,7 +1,9 @@
 #! /bin/sh
 OUTPUT_DEV="/dev/mtdblock2"
-DATA_DEV="/dev/mtdblock7"
-PREV_OUTPUT_CID_BLOCKDEV="/dev/mtdblock6"
+DATA_DEV="/dev/mtdblock5"
+SCRATCH_DEV="/dev/mtdblock4"
+PREV_OUTPUT_CID_BLOCKDEV="/dev/mtdblock3"
+METADATA_DEV="/dev/mtdblock6"
 EMPTY_CID="bafybeiczsscdsbs7ffqz55asqdf3smv6klcw3gofszvwlyarci47bgf354"
 EMPTY_SHA256="e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
 
@@ -9,6 +11,7 @@ if [ "$RUNTIME_CONFIG" = "qemu" ]; then
   ARCH=amd64
 else
   ARCH=riscv64
+  RUNTIME_CONFIG=riscv64
 fi
 
 ARCH_PATH="/opt/$ARCH/bin"
@@ -35,29 +38,12 @@ if [ "$RUNTIME_CONFIG" = "qemu" ]; then
   mount "/dev/vdd" "/mnt/scratch"
   PREV_OUTPUT_CID_BLOCKDEV="/dev/vdc"
   DATA_DEV="/dev/vde"
+  METADATA_DEV="/dev/vdf"
 else
-  # mtdblock0 - cartesi rootfs (ext2)
-  #         1 - datachain function (squashfs)
-  #         2 - cartesi output (raw)
-  #         3 - datachain previous output (car)
-  #         4 - datachain scratch fs (ext2)
-  #         5 - datachain input
-
-  for dev in /dev/mtdblock[3-5]; do
-    if [ -b "$dev" ]; then
-      mtdblock=`basename $dev`
-      mntpoint=`cat /sys/block/${mtdblock}/device/name`
-
-      if [ "$mntpoint" = "scratch" ]; then
-        echo "Formatting scratch filesystem..."
-        mke2fs -q -t ext2 -L scratch "$dev"
-      fi
-
-      echo "Mounting /mnt/$mntpoint ..."
-      mkdir -p "/mnt/$mntpoint"
-      mount "$dev" "/mnt/$mntpoint"
-    fi
-  done
+  echo "Formatting scratch filesystem..."
+  mke2fs -q -t ext2 -L scratch "$SCRATCH_DEV"
+  mkdir "/mnt/scratch"
+  mount $SCRATCH_DEV /mnt/scratch
 fi
 
 # State overlay mountpoints and output directories.
@@ -84,7 +70,7 @@ mount --bind /sys  /mnt/stage2/sys
 mkdir -p /mnt/scratch/root
 mount --bind /mnt/scratch/root /mnt/stage2/root
 
-chroot /mnt/stage2 /init $RUNTIME_CONFIG $PREV_OUTPUT_CID_BLOCKDEV $DATA_DEV $OUTPUT_DEV
+chroot /mnt/stage2 /init $RUNTIME_CONFIG $PREV_OUTPUT_CID_BLOCKDEV $DATA_DEV $OUTPUT_DEV $METADATA_DEV
 
 RET=$?
 if [ x$RET != 0 ]; then
